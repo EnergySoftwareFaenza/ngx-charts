@@ -192,6 +192,7 @@ export class LineChartComponent extends BaseChartComponent {
   @Input() yScaleMin: number;
   @Input() yScaleMax: number;
 
+  @Output() hover: EventEmitter<any> = new EventEmitter<any>();
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
 
@@ -434,6 +435,7 @@ export class LineChartComponent extends BaseChartComponent {
   updateHoveredVertical(item): void {
     this.hoveredVertical = item.value;
     this.deactivateAll();
+    this.hover.emit(item);
   }
 
   @HostListener('mouseleave')

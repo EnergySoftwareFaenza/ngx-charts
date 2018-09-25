@@ -8,7 +8,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Component, Input, ChangeDetectionStrategy, ElementRef, Output, EventEmitter } from '@angular/core';
-import { formatLabel } from '..';
+import { formatLabel } from '../common/label.helper';
 var BarLabelComponent = /** @class */ (function () {
     function BarLabelComponent(element) {
         this.dimensionsChanged = new EventEmitter();
@@ -99,7 +99,7 @@ var BarLabelComponent = /** @class */ (function () {
         Component({
             selector: 'g[ngx-charts-bar-label]',
             template: "  \n    <svg:text   \n      class=\"textDataLabel\" \n      alignment-baseline=\"middle\"     \n      [attr.text-anchor]=\"textAnchor\"\n      [attr.transform]=\"transform\"\n      [attr.x]=\"x\" \n      [attr.y]=\"y\">\n      {{formatedValue}}     \n    </svg:text>          \n\n  ",
-            styleUrls: ['./bar-label.component.css'],
+            styleUrls: ['./bar-label.component.scss'],
             changeDetection: ChangeDetectionStrategy.OnPush
         }),
         __metadata("design:paramtypes", [ElementRef])
