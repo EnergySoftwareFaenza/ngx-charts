@@ -195,7 +195,7 @@ export class LineChartComponent extends BaseChartComponent {
   @Output() hover: EventEmitter<any> = new EventEmitter<any>();
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
-
+  @Output() cleanHover: EventEmitter<boolean> = new EventEmitter<boolean>();
   @ContentChild('tooltipTemplate') tooltipTemplate: TemplateRef<any>;
   @ContentChild('seriesTooltipTemplate') seriesTooltipTemplate: TemplateRef<any>;
 
@@ -442,13 +442,13 @@ export class LineChartComponent extends BaseChartComponent {
   hideCircles(): void {
     this.hoveredVertical = null;
     this.deactivateAll();
+    this.cleanHover.emit(true);
   }
 
   onClick(data, series?): void {
     if (series) {
       data.series = series.name;
     }
-
     this.select.emit(data);
   }
 

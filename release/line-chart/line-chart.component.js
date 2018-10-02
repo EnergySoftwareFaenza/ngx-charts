@@ -41,6 +41,7 @@ var LineChartComponent = /** @class */ (function (_super) {
         _this.hover = new EventEmitter();
         _this.activate = new EventEmitter();
         _this.deactivate = new EventEmitter();
+        _this.cleanHover = new EventEmitter();
         _this.margin = [10, 20, 10, 20];
         _this.xAxisHeight = 0;
         _this.yAxisWidth = 0;
@@ -234,6 +235,7 @@ var LineChartComponent = /** @class */ (function (_super) {
     LineChartComponent.prototype.hideCircles = function () {
         this.hoveredVertical = null;
         this.deactivateAll();
+        this.cleanHover.emit(true);
     };
     LineChartComponent.prototype.onClick = function (data, series) {
         if (series) {
@@ -437,6 +439,10 @@ var LineChartComponent = /** @class */ (function (_super) {
         Output(),
         __metadata("design:type", EventEmitter)
     ], LineChartComponent.prototype, "deactivate", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], LineChartComponent.prototype, "cleanHover", void 0);
     __decorate([
         ContentChild('tooltipTemplate'),
         __metadata("design:type", TemplateRef)

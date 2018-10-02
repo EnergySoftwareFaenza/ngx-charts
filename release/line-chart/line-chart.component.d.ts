@@ -35,6 +35,7 @@ export declare class LineChartComponent extends BaseChartComponent {
     hover: EventEmitter<any>;
     activate: EventEmitter<any>;
     deactivate: EventEmitter<any>;
+    cleanHover: EventEmitter<boolean>;
     tooltipTemplate: TemplateRef<any>;
     seriesTooltipTemplate: TemplateRef<any>;
     dims: ViewDimensions;
