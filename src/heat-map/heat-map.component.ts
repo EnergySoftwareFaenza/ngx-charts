@@ -11,6 +11,7 @@ import { scaleBand } from 'd3-scale';
 import { BaseChartComponent } from '../common/base-chart.component';
 import { calculateViewDimensions, ViewDimensions } from '../common/view-dimensions.helper';
 import { ColorHelper } from '../common/color.helper';
+import {getScaleType} from '../common/domain.helper';
 
 @Component({
   selector: 'ngx-charts-heat-map',
@@ -28,6 +29,9 @@ import { ColorHelper } from '../common/color.helper';
           [dims]="dims"
           [showLabel]="showXAxisLabel"
           [labelText]="xAxisLabel"
+          [trimTicks]="trimXAxisTicks"
+          [rotateTicks]="rotateXAxisTicks"
+          [maxTickLength]="maxXAxisTickLength"
           [tickFormatting]="xAxisTickFormatting"
           [ticks]="xAxisTicks"
           (dimensionsChanged)="updateXAxisHeight($event)">
@@ -38,6 +42,8 @@ import { ColorHelper } from '../common/color.helper';
           [dims]="dims"
           [showLabel]="showYAxisLabel"
           [labelText]="yAxisLabel"
+          [trimTicks]="trimYAxisTicks"
+          [maxTickLength]="maxYAxisTickLength"
           [tickFormatting]="yAxisTickFormatting"
           [ticks]="yAxisTicks"
           (dimensionsChanged)="updateYAxisWidth($event)">
@@ -73,6 +79,7 @@ export class HeatMapComponent extends BaseChartComponent {
 
   @Input() legend;
   @Input() legendTitle: string = 'Legend';
+  @Input() legendPosition: string = 'right';
   @Input() xAxis;
   @Input() yAxis;
   @Input() showXAxisLabel;
@@ -81,6 +88,11 @@ export class HeatMapComponent extends BaseChartComponent {
   @Input() yAxisLabel;
   @Input() gradient: boolean;
   @Input() innerPadding: number | number[] = 8;
+  @Input() trimXAxisTicks: boolean = true;
+  @Input() trimYAxisTicks: boolean = true;
+  @Input() rotateXAxisTicks: boolean = true;
+  @Input() maxXAxisTickLength: number = 16;
+  @Input() maxYAxisTickLength: number = 16;
   @Input() xAxisTickFormatting: any;
   @Input() yAxisTickFormatting: any;
   @Input() xAxisTicks: any[];
@@ -118,7 +130,7 @@ export class HeatMapComponent extends BaseChartComponent {
     this.yDomain = this.getYDomain();
     this.valueDomain = this.getValueDomain();
 
-    this.scaleType = this.getScaleType(this.valueDomain);
+    this.scaleType = getScaleType(this.valueDomain, false);
 
     this.dims = calculateViewDimensions({
       width: this.width,
@@ -131,7 +143,8 @@ export class HeatMapComponent extends BaseChartComponent {
       showXLabel: this.showXAxisLabel,
       showYLabel: this.showYAxisLabel,
       showLegend: this.legend,
-      legendType: this.scaleType
+      legendType: this.scaleType,
+      legendPosition: this.legendPosition
     });
 
     if (this.scaleType === 'linear') {
@@ -271,19 +284,6 @@ export class HeatMapComponent extends BaseChartComponent {
     this.select.emit(data);
   }
 
-  getScaleType(values): string {
-    let num = true;
-
-    for (const value of values) {
-      if (typeof value !== 'number') {
-        num = false;
-      }
-    }
-
-    if (num) return 'linear';
-    return 'ordinal';
-  }
-
   setColors(): void {
     this.colors = new ColorHelper(this.scheme, this.scaleType, this.valueDomain);
   }
@@ -293,7 +293,8 @@ export class HeatMapComponent extends BaseChartComponent {
       scaleType: this.scaleType,
       domain: this.valueDomain,
       colors: this.scaleType === 'ordinal' ? this.colors : this.colors.scale,
-      title: this.scaleType === 'ordinal' ? this.legendTitle : undefined
+      title: this.scaleType === 'ordinal' ? this.legendTitle : undefined,
+      position: this.legendPosition
     };
   }
 

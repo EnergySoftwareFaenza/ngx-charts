@@ -1,5 +1,58 @@
 # Changelog
 
+## 11.1.0
+
+- Feature: added option to disable x axis tick rotation (#1139)
+- Bug: Update peer dependency requirements
+
+## 11.0.1
+
+- Bug: Fixes displaying of tooltip on IE 11 (#1157)
+
+## 11.0.0
+
+- Breaking: Remove Angular location strategy from ChartCommonModule (#915)
+  - Any Angular applications, that rely on the pre-configured location strategy provided by ngx-charts, will need to set it separately
+- Feature: Allow access to custom properties in tooltip templates (#555)
+- Bug: Update tooltip positioning to correctly flip sides when there is not enough available space (#1136)
+- Bug: Fixed combo Line and Bar chart not aligning (#1154)
+- Chore: Removed unnecessary peer dependencies (#1140)
+- Chore: Replaced bitwise operators with math.floor (#1151)
+- Chore: Changed tree-map label class to avoid conflict (#1117)
+- Chore: Remove unused property binding (#1120)
+- Docs: motivation.md Typo fix (#1123)
+
+## 10.1.0
+
+- Feature: Allow configuration of tick trimming on charts with X and Y axis (#870)
+- Bug: Updated packages to remove event-stream vulnerability
+- Bug: Fixed issue where advanced pie legend click emits the truncated (#1106)
+- Bug: Fixed rotation to respect tick trimming
+- Bug: Fixed Pie Chart flicker on Safari (#1068)
+- Bug: Fixed issue where vertical bar chart is not showing X axis when all data values are negative (#1044)
+- Chore: Removed unused param in GridPanelSeriesComponent (#1025)
+- Chore: Added type check instead of truthy value for determining min/max in getRangeGenerator (#1042)
+- Docs: Fixed typo (#1056)
+- Docs: Fixed link in readme (#1053)
+- Docs: Fixed documentation link (#1029)
+
+## 10.0.0
+
+- Breaking: Upgraded to angular 7
+- Feature: Implemented legened positioning
+- Feature: Added accessibility attributes to bar charts (#977)
+- Chore: Migrated to Renderer2 (#1021)
+- Chore: getScaleType performance improvements (#995)
+- Docs: Fixed value typo (#974)
+
+## 9.1.1
+
+- Chore: Move d3 libraries back to dependencies (#1008)
+
+## 9.1.0
+
+- Feature: Added ES Module Support (#1004)
+
 ## 9.0.0
 
 - Breaking: Changed the input of valueFormatting for the tree map chart from an object to number
@@ -91,7 +144,7 @@
 - Bug: Removed path from SVG refs to fix gradients not working when URL has queryString (#584)
 - Bug: Fixed bug where value arc animation on gauge chart would start from 0 on update (#563)
 - Bug: Removed date conversion for name-value at series-tooltip (#544)
-- Bug: Added null check for rootComponents in injection servoce (#574)
+- Bug: Added null check for rootComponents in injection service (#574)
 - Bug: Fixed issue where the tooltip would not appear for certain points (#501)
 - Bug: Fixed issue where pie chart colors would not update on color changes (#551)
 - Bug: Added polyfill for SVGElement.prototype.contains (#386)
@@ -143,7 +196,7 @@
 
 - Feature: Added Polar/Radar chart type (#380)
 - Enhancement: Disable pointer if no click events are attached to number cards (#378)
-- Enhancement: Added gradiant to tree map chart (#382)
+- Enhancement: Added gradient to tree map chart (#382)
 - Enhancement: Added support for inverted colors from rgba values in number cards (#366)
 - Enhancement: Added value and label formatting to tree map (#383)
 - Refactor: loremess restrictive angular dependency versioning (#358)
@@ -341,7 +394,7 @@
 - BREAKING: Renamed `clickHandler` to `select` (#120)
 - Bug: Tooltips show up in top left corner sometimes
 - Polish: Tooltips have animation entry now
-- Polish: Add highight gradient and column when hovering a circle
+- Polish: Add highlight gradient and column when hovering a circle
 - Polish: Remove outline on focus (#106)
 - Polish: Make pie grid less ugly (#90)
 - Polish: Highlighting a line/area chart in legend, defocuses others
@@ -380,7 +433,7 @@
 ## 1.8.0
 
 - Renamed CommonModule to ChartCommonModule to fix name conflicts with other frameworks #109
-- Converted date objets to formatted strings in some charts
+- Converted date objects to formatted strings in some charts
 - Removed rounded corners on thin bars
 - Improved on destroy hooks in tooltips
 - Merged `legendLabelClick` output into `select` output

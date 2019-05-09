@@ -38,7 +38,7 @@ function multiFormat(value) {
   selector: 'app',
   providers: [Location, { provide: LocationStrategy, useClass: HashLocationStrategy }],
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['../node_modules/@swimlane/ngx-ui/release/index.css', './app.component.scss'],
+  styleUrls: ['../node_modules/@swimlane/ngx-ui/index.css', './app.component.scss'],
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
@@ -75,6 +75,7 @@ export class AppComponent implements OnInit {
   gradient = false;
   showLegend = true;
   legendTitle = 'Legend';
+  legendPosition = 'right';
   showXAxisLabel = true;
   tooltipDisabled = false;
   xAxisLabel = 'Country';
@@ -95,6 +96,11 @@ export class AppComponent implements OnInit {
   yScaleMin: number;
   yScaleMax: number;
   showDataLabel = false;
+  trimXAxisTicks = true;
+  trimYAxisTicks = true;
+  rotateXAxisTicks = true;
+  maxXAxisTickLength = 16;
+  maxYAxisTickLength = 16;
 
   curves = {
     Basis: shape.curveBasis,
@@ -612,6 +618,7 @@ export class AppComponent implements OnInit {
   getFunction(text = this.mathText) {
     try {
       text = `with (Math) { return ${this.mathText} }`;
+      // tslint:disable-next-line:function-constructor
       const fn = new Function('x', text).bind(Math);
       return typeof fn(1) === 'number' ? fn : null;
     } catch (err) {
