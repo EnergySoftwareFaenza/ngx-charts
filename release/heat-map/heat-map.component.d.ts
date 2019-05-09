@@ -5,6 +5,7 @@ import { ColorHelper } from '../common/color.helper';
 export declare class HeatMapComponent extends BaseChartComponent {
     legend: any;
     legendTitle: string;
+    legendPosition: string;
     xAxis: any;
     yAxis: any;
     showXAxisLabel: any;
@@ -13,6 +14,11 @@ export declare class HeatMapComponent extends BaseChartComponent {
     yAxisLabel: any;
     gradient: boolean;
     innerPadding: number | number[];
+    trimXAxisTicks: boolean;
+    trimYAxisTicks: boolean;
+    rotateXAxisTicks: boolean;
+    maxXAxisTickLength: number;
+    maxYAxisTickLength: number;
     xAxisTickFormatting: any;
     yAxisTickFormatting: any;
     xAxisTicks: any[];
@@ -63,18 +69,18 @@ export declare class HeatMapComponent extends BaseChartComponent {
     getYScale(): any;
     getRects(): any[];
     onClick(data: any): void;
-    getScaleType(values: any): string;
     setColors(): void;
     getLegendOptions(): {
         scaleType: string;
         domain: any[];
         colors: any;
         title: string;
+        position: string;
     };
-    updateYAxisWidth({width}: {
+    updateYAxisWidth({ width }: {
         width: any;
     }): void;
-    updateXAxisHeight({height}: {
+    updateXAxisHeight({ height }: {
         height: any;
     }): void;
 }
