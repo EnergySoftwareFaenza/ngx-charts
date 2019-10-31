@@ -24,8 +24,8 @@ import { BaseChartComponent } from '../common/base-chart.component';
       [activeEntries]="activeEntries"
       [animations]="animations"
       (legendLabelClick)="onClick($event)"
-      (legendLabelActivate)="onActivate($event)"
-      (legendLabelDeactivate)="onDeactivate($event)"
+      (legendLabelActivate)="onActivate($event, true)"
+      (legendLabelDeactivate)="onDeactivate($event, true)"
     >
       <svg:g [attr.transform]="transform" class="bar-chart chart">
         <svg:g
@@ -72,6 +72,7 @@ import { BaseChartComponent } from '../common/base-chart.component';
           [animations]="animations"
           [showDataLabel]="showDataLabel"
           [dataLabelFormatting]="dataLabelFormatting"
+          [noBarWhenZero]="noBarWhenZero"
           (select)="onClick($event)"
           (activate)="onActivate($event)"
           (deactivate)="onDeactivate($event)"
@@ -115,11 +116,12 @@ export class BarHorizontalComponent extends BaseChartComponent {
   @Input() xScaleMin: number;
   @Input() showDataLabel: boolean = false;
   @Input() dataLabelFormatting: any;
+  @Input() noBarWhenZero: boolean = true;
 
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
 
-  @ContentChild('tooltipTemplate') tooltipTemplate: TemplateRef<any>;
+  @ContentChild('tooltipTemplate', { static: false }) tooltipTemplate: TemplateRef<any>;
 
   dims: ViewDimensions;
   yScale: any;
@@ -157,6 +159,8 @@ export class BarHorizontalComponent extends BaseChartComponent {
       legendType: this.schemeType,
       legendPosition: this.legendPosition
     });
+
+    this.formatDates();
 
     this.xScale = this.getXScale();
     this.yScale = this.getYScale();
@@ -196,7 +200,7 @@ export class BarHorizontalComponent extends BaseChartComponent {
   }
 
   getYDomain(): any[] {
-    return this.results.map(d => d.name);
+    return this.results.map(d => d.label);
   }
 
   onClick(data): void {
@@ -255,7 +259,15 @@ export class BarHorizontalComponent extends BaseChartComponent {
     }
   }
 
-  onActivate(item) {
+  onActivate(item, fromLegend = false) {
+    item = this.results.find(d => {
+      if (fromLegend) {
+        return d.label === item.name;
+      } else {
+        return d.name === item.name;
+      }
+    });
+
     const idx = this.activeEntries.findIndex(d => {
       return d.name === item.name && d.value === item.value && d.series === item.series;
     });
@@ -267,7 +279,15 @@ export class BarHorizontalComponent extends BaseChartComponent {
     this.activate.emit({ value: item, entries: this.activeEntries });
   }
 
-  onDeactivate(item) {
+  onDeactivate(item, fromLegend = false) {
+    item = this.results.find(d => {
+      if (fromLegend) {
+        return d.label === item.name;
+      } else {
+        return d.name === item.name;
+      }
+    });
+
     const idx = this.activeEntries.findIndex(d => {
       return d.name === item.name && d.value === item.value && d.series === item.series;
     });
