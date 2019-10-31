@@ -117,7 +117,7 @@ import { getUniqueXDomainValues, getScaleType } from '../common/domain.helper';
                 [activeEntries]="activeEntries"
                 [tooltipDisabled]="tooltipDisabled"
                 [tooltipTemplate]="tooltipTemplate"
-                (select)="onClick($event, series)"
+                (select)="onClick($event)"
                 (activate)="onActivate($event)"
                 (deactivate)="onDeactivate($event)"
               />
@@ -213,9 +213,10 @@ export class LineChartComponent extends BaseChartComponent {
   @Output() hover: EventEmitter<any> = new EventEmitter<any>();
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() deactivate: EventEmitter<any> = new EventEmitter();
+
   @Output() cleanHover: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @ContentChild('tooltipTemplate') tooltipTemplate: TemplateRef<any>;
-  @ContentChild('seriesTooltipTemplate') seriesTooltipTemplate: TemplateRef<any>;
+  @ContentChild('tooltipTemplate', { static: false }) tooltipTemplate: TemplateRef<any>;
+  @ContentChild('seriesTooltipTemplate', { static: false }) seriesTooltipTemplate: TemplateRef<any>;
 
   dims: ViewDimensions;
   xSet: any;
@@ -433,6 +434,7 @@ export class LineChartComponent extends BaseChartComponent {
     if (series) {
       data.series = series.name;
     }
+    
     this.select.emit(data);
   }
 

@@ -6,7 +6,7 @@ import * as shape from 'd3-shape';
 import * as d3 from 'd3';
 
 import { colorSets } from '../src/utils/color-sets';
-import { formatLabel } from '../src/common/label.helper';
+import { formatLabel, escapeLabel } from '../src/common/label.helper';
 import {
   single,
   multi,
@@ -17,6 +17,8 @@ import {
   timelineFilterBarData,
   fiscalYearReport
 } from './data';
+import { bubbleDemoData } from './bubble-chart-interactive/data';
+import { BubbleChartInteractiveServerDataModel } from './bubble-chart-interactive/models';
 import { data as countries } from 'emoji-flags';
 import chartGroups from './chartTypes';
 import { barChart, lineChartSeries } from './combo-chart-data';
@@ -78,6 +80,7 @@ export class AppComponent implements OnInit {
   legendPosition = 'right';
   showXAxisLabel = true;
   tooltipDisabled = false;
+  showText = true;
   xAxisLabel = 'Country';
   showYAxisLabel = true;
   yAxisLabel = 'GDP Per Capita';
@@ -96,6 +99,7 @@ export class AppComponent implements OnInit {
   yScaleMin: number;
   yScaleMax: number;
   showDataLabel = false;
+  noBarWhenZero = true;
   trimXAxisTicks = true;
   trimYAxisTicks = true;
   rotateXAxisTicks = true;
@@ -222,6 +226,10 @@ export class AppComponent implements OnInit {
   treemapPath: any[] = [];
   sumBy: string = 'Size';
 
+  // bubble chart interactive demo
+  bubbleDemoTempData: any[] = [];
+  bubbleDemoChart: BubbleChartInteractiveServerDataModel;
+
   // Reference lines
   showRefLines: boolean = true;
   showRefLabels: boolean = true;
@@ -242,10 +250,14 @@ export class AppComponent implements OnInit {
       bubble,
       plotData: this.generatePlotData(),
       treemap,
+      bubbleDemoData,
       fiscalYearReport
     });
 
+    // interactive drilldown demos
     this.treemapProcess();
+    this.bubbleDemoChart = new BubbleChartInteractiveServerDataModel();
+    this.bubbleDemoProcess(bubbleDemoData[0]);
 
     this.dateData = generateData(5, false);
     this.dateDataWithRange = generateData(2, true);
@@ -375,7 +387,15 @@ export class AppComponent implements OnInit {
 
       this.bubble = [...this.bubble, bubbleEntry];
 
+      // bubble interactive demo
+      const getRandomInt = (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      };
+      this.bubbleDemoProcess(bubbleDemoData[getRandomInt(0, bubbleDemoData.length - 1)]);
+
       this.statusData = this.getStatusData();
+
+      this.timelineFilterBarData = timelineFilterBarData();
     }
 
     const date = new Date(Math.floor(1473700105009 + Math.random() * 1000000000));
@@ -430,7 +450,15 @@ export class AppComponent implements OnInit {
   }
 
   select(data) {
-    console.log('Item clicked', data);
+    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+  }
+
+  activate(data) {
+    console.log('Activate', JSON.parse(JSON.stringify(data)));
+  }
+
+  deactivate(data) {
+    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
 
   getInterpolationType(curveType) {
@@ -516,7 +544,7 @@ export class AppComponent implements OnInit {
     const val = formatLabel(data.value);
 
     return `
-      <span class="tooltip-label">${label}</span>
+      <span class="tooltip-label">${escapeLabel(label)}</span>
       <span class="tooltip-val">$${val}</span>
     `;
   }
@@ -585,7 +613,7 @@ export class AppComponent implements OnInit {
   }
 
   gdpLabelFormatting(c) {
-    return `${c.label}<br/><small class="number-card-label">GDP Per Capita</small>`;
+    return `${escapeLabel(c.label)}<br/><small class="number-card-label">GDP Per Capita</small>`;
   }
 
   statusLabelFormat(c): string {
@@ -703,5 +731,34 @@ export class AppComponent implements OnInit {
 
   dblclick(event) {
     console.log('Doube click', event);
+  }
+
+  /*
+  **
+  Bubble Chart Interactive Demo
+  **
+  */
+
+  bubbleDemoProcess(dataFromServer) {
+    this.bubbleDemoChart.setDataFromServer(dataFromServer);
+    this.bubbleDemoTempData = this.bubbleDemoChart.toChart();
+  }
+
+  getBubbleInteractiveTitle() {
+    return this.bubbleDemoChart.getChartTitle();
+  }
+
+  bubbleShowDrilldownResetLink() {
+    return this.bubbleDemoChart.getDrilldownDepth() > 0;
+  }
+
+  onClickResetBubbleInteractiveDrill() {
+    this.bubbleDemoChart.resetDrilldown();
+    this.bubbleDemoTempData = this.bubbleDemoChart.toChart();
+  }
+
+  onSelectBubbleInteractivePoint(event) {
+    this.bubbleDemoChart.drilldown(event);
+    this.bubbleDemoTempData = this.bubbleDemoChart.toChart();
   }
 }
