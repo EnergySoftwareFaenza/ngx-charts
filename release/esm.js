@@ -1200,6 +1200,25 @@ function formatLabel(label) {
     }
     return label;
 }
+/**
+ * Escapes a label.
+ *
+ * @export
+ * @param {*} label
+ * @returns {string}
+ */
+function escapeLabel(label) {
+    return label.toLocaleString().replace(/[&'`"<>]/g, function (match) {
+        return {
+            '&': '&amp;',
+            '\'': '&#x27;',
+            '`': '&#x60;',
+            '"': '&quot;',
+            '<': '&lt;',
+            '>': '&gt;',
+        }[match];
+    });
+}
 
 var LegendComponent = /** @class */ (function () {
     function LegendComponent(cd) {
@@ -3050,7 +3069,7 @@ var CircleSeriesComponent = /** @class */ (function () {
     };
     CircleSeriesComponent.prototype.getTooltipText = function (_a) {
         var tooltipLabel = _a.tooltipLabel, value = _a.value, seriesName = _a.seriesName, min$$1 = _a.min, max$$1 = _a.max;
-        return "\n      <span class=\"tooltip-label\">" + seriesName + " \u2022 " + tooltipLabel + "</span>\n      <span class=\"tooltip-val\">" + value.toLocaleString() + this.getTooltipMinMaxText(min$$1, max$$1) + "</span>\n    ";
+        return "\n      <span class=\"tooltip-label\">" + escapeLabel(seriesName) + " \u2022 " + escapeLabel(tooltipLabel) + "</span>\n      <span class=\"tooltip-val\">" + value.toLocaleString() + this.getTooltipMinMaxText(min$$1, max$$1) + "</span>\n    ";
     };
     CircleSeriesComponent.prototype.getTooltipMinMaxText = function (min$$1, max$$1) {
         if (min$$1 !== undefined || max$$1 !== undefined) {
@@ -8636,7 +8655,7 @@ var BarVerticalStackedComponent = /** @class */ (function (_super) {
         }
     };
     BarVerticalStackedComponent.prototype.groupTransform = function (group) {
-        return "translate(" + this.xScale(group.name) + ", 0)";
+        return "translate(" + (this.xScale(group.name) || 0) + ", 0)";
     };
     BarVerticalStackedComponent.prototype.onClick = function (data, group) {
         if (group) {
@@ -8992,7 +9011,7 @@ var SeriesVerticalComponent = /** @class */ (function () {
             }
             bar.tooltipText = _this.tooltipDisabled
                 ? undefined
-                : "\n        <span class=\"tooltip-label\">" + tooltipLabel + "</span>\n        <span class=\"tooltip-val\">" + value.toLocaleString() + "</span>\n      ";
+                : "\n        <span class=\"tooltip-label\">" + escapeLabel(tooltipLabel) + "</span>\n        <span class=\"tooltip-val\">" + value.toLocaleString() + "</span>\n      ";
             return bar;
         });
         this.updateDataLabels();
@@ -9264,7 +9283,7 @@ var SeriesHorizontal = /** @class */ (function () {
             }
             bar.tooltipText = _this.tooltipDisabled
                 ? undefined
-                : "\n        <span class=\"tooltip-label\">" + tooltipLabel + "</span>\n        <span class=\"tooltip-val\">" + value.toLocaleString() + "</span>\n      ";
+                : "\n        <span class=\"tooltip-label\">" + escapeLabel(tooltipLabel) + "</span>\n        <span class=\"tooltip-val\">" + value.toLocaleString() + "</span>\n      ";
             return bar;
         });
         this.updateDataLabels();
@@ -10056,8 +10075,9 @@ var BubbleSeriesComponent = /** @class */ (function () {
         var name = hasSeriesName && hasTooltipLabel
             ? circle.seriesName + " \u2022 " + circle.tooltipLabel
             : circle.seriesName + circle.tooltipLabel;
-        var tooltipTitle = hasSeriesName || hasTooltipLabel ? "<span class=\"tooltip-label\">" + name + "</span>" : '';
-        return "\n      " + tooltipTitle + "\n      <span class=\"tooltip-label\">\n        <label>" + xAxisLabel + "</label> " + x + "<br />\n        <label>" + yAxisLabel + "</label> " + y + "\n      </span>\n      <span class=\"tooltip-val\">\n        " + radiusValue + "\n      </span>\n    ";
+        var tooltipTitle = hasSeriesName || hasTooltipLabel ?
+            "<span class=\"tooltip-label\">" + escapeLabel(name) + "</span>" : '';
+        return "\n      " + tooltipTitle + "\n      <span class=\"tooltip-label\">\n        <label>" + escapeLabel(xAxisLabel) + "</label> " + escapeLabel(x) + "<br />\n        <label>" + escapeLabel(yAxisLabel) + "</label> " + escapeLabel(y) + "\n      </span>\n      <span class=\"tooltip-val\">\n        " + escapeLabel(radiusValue) + "\n      </span>\n    ";
     };
     BubbleSeriesComponent.prototype.onClick = function (data) {
         this.select.emit(data);
@@ -10297,6 +10317,9 @@ var ForceDirectedGraphComponent = /** @class */ (function (_super) {
         this.draggingNode.fy = undefined;
         this.draggingNode = undefined;
     };
+    ForceDirectedGraphComponent.prototype.escape = function (label) {
+        return escapeLabel(label);
+    };
     var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     __decorate([
         Input(),
@@ -10377,7 +10400,7 @@ var ForceDirectedGraphComponent = /** @class */ (function (_super) {
     ForceDirectedGraphComponent = __decorate([
         Component({
             selector: 'ngx-charts-force-directed-graph',
-            template: "\n    <ngx-charts-chart\n      [view]=\"[width, height]\"\n      [showLegend]=\"legend\"\n      [legendOptions]=\"legendOptions\"\n      [animations]=\"animations\"\n      (legendLabelClick)=\"onClick($event)\"\n      (legendLabelActivate)=\"onActivate($event)\"\n      (legendLabelDeactivate)=\"onDeactivate($event)\"\n    >\n      <svg:g [attr.transform]=\"transform\" class=\"force-directed-graph chart\">\n        <svg:g class=\"links\">\n          <svg:g *ngFor=\"let link of links; trackBy: trackLinkBy\">\n            <ng-template\n              *ngIf=\"linkTemplate\"\n              [ngTemplateOutlet]=\"linkTemplate\"\n              [ngTemplateOutletContext]=\"{ $implicit: link }\"\n            ></ng-template>\n            <svg:line\n              *ngIf=\"!linkTemplate\"\n              strokeWidth=\"1\"\n              class=\"edge\"\n              [attr.x1]=\"link.source.x\"\n              [attr.y1]=\"link.source.y\"\n              [attr.x2]=\"link.target.x\"\n              [attr.y2]=\"link.target.y\"\n            />\n          </svg:g>\n        </svg:g>\n        <svg:g class=\"nodes\">\n          <svg:g\n            *ngFor=\"let node of nodes; trackBy: trackNodeBy\"\n            [attr.transform]=\"'translate(' + node.x + ',' + node.y + ')'\"\n            [attr.fill]=\"colors.getColor(groupResultsBy(node))\"\n            [attr.stroke]=\"colors.getColor(groupResultsBy(node))\"\n            (mousedown)=\"onDragStart(node, $event)\"\n            (click)=\"onClick({ name: node.value })\"\n            ngx-tooltip\n            [tooltipDisabled]=\"tooltipDisabled\"\n            [tooltipPlacement]=\"'top'\"\n            [tooltipType]=\"'tooltip'\"\n            [tooltipTitle]=\"tooltipTemplate ? undefined : node.value\"\n            [tooltipTemplate]=\"tooltipTemplate\"\n            [tooltipContext]=\"node\"\n          >\n            <ng-template\n              *ngIf=\"nodeTemplate\"\n              [ngTemplateOutlet]=\"nodeTemplate\"\n              [ngTemplateOutletContext]=\"{ $implicit: node }\"\n            ></ng-template>\n            <svg:circle *ngIf=\"!nodeTemplate\" r=\"5\" />\n          </svg:g>\n        </svg:g>\n      </svg:g>\n    </ngx-charts-chart>\n  ",
+            template: "\n    <ngx-charts-chart\n      [view]=\"[width, height]\"\n      [showLegend]=\"legend\"\n      [legendOptions]=\"legendOptions\"\n      [animations]=\"animations\"\n      (legendLabelClick)=\"onClick($event)\"\n      (legendLabelActivate)=\"onActivate($event)\"\n      (legendLabelDeactivate)=\"onDeactivate($event)\"\n    >\n      <svg:g [attr.transform]=\"transform\" class=\"force-directed-graph chart\">\n        <svg:g class=\"links\">\n          <svg:g *ngFor=\"let link of links; trackBy: trackLinkBy\">\n            <ng-template\n              *ngIf=\"linkTemplate\"\n              [ngTemplateOutlet]=\"linkTemplate\"\n              [ngTemplateOutletContext]=\"{ $implicit: link }\"\n            ></ng-template>\n            <svg:line\n              *ngIf=\"!linkTemplate\"\n              strokeWidth=\"1\"\n              class=\"edge\"\n              [attr.x1]=\"link.source.x\"\n              [attr.y1]=\"link.source.y\"\n              [attr.x2]=\"link.target.x\"\n              [attr.y2]=\"link.target.y\"\n            />\n          </svg:g>\n        </svg:g>\n        <svg:g class=\"nodes\">\n          <svg:g\n            *ngFor=\"let node of nodes; trackBy: trackNodeBy\"\n            [attr.transform]=\"'translate(' + node.x + ',' + node.y + ')'\"\n            [attr.fill]=\"colors.getColor(groupResultsBy(node))\"\n            [attr.stroke]=\"colors.getColor(groupResultsBy(node))\"\n            (mousedown)=\"onDragStart(node, $event)\"\n            (click)=\"onClick({ name: node.value })\"\n            ngx-tooltip\n            [tooltipDisabled]=\"tooltipDisabled\"\n            [tooltipPlacement]=\"'top'\"\n            [tooltipType]=\"'tooltip'\"\n            [tooltipTitle]=\"tooltipTemplate ? undefined : escape(node.value)\"\n            [tooltipTemplate]=\"tooltipTemplate\"\n            [tooltipContext]=\"node\"\n          >\n            <ng-template\n              *ngIf=\"nodeTemplate\"\n              [ngTemplateOutlet]=\"nodeTemplate\"\n              [ngTemplateOutletContext]=\"{ $implicit: node }\"\n            ></ng-template>\n            <svg:circle *ngIf=\"!nodeTemplate\" r=\"5\" />\n          </svg:g>\n        </svg:g>\n      </svg:g>\n    </ngx-charts-chart>\n  ",
             styles: [".ngx-charts{float:left;overflow:visible}.ngx-charts .arc,.ngx-charts .bar,.ngx-charts .circle{cursor:pointer}.ngx-charts .arc.active,.ngx-charts .arc:hover,.ngx-charts .bar.active,.ngx-charts .bar:hover,.ngx-charts .card.active,.ngx-charts .card:hover,.ngx-charts .cell.active,.ngx-charts .cell:hover{opacity:.8;transition:opacity .1s ease-in-out}.ngx-charts .arc:focus,.ngx-charts .bar:focus,.ngx-charts .card:focus,.ngx-charts .cell:focus{outline:0}.ngx-charts .arc.hidden,.ngx-charts .bar.hidden,.ngx-charts .card.hidden,.ngx-charts .cell.hidden{display:none}.ngx-charts g:focus{outline:0}.ngx-charts .area-series.inactive,.ngx-charts .line-series-range.inactive,.ngx-charts .line-series.inactive,.ngx-charts .polar-series-area.inactive,.ngx-charts .polar-series-path.inactive{transition:opacity .1s ease-in-out;opacity:.2}.ngx-charts .line-highlight{display:none}.ngx-charts .line-highlight.active{display:block}.ngx-charts .area{opacity:.6}.ngx-charts .circle:hover{cursor:pointer}.ngx-charts .label{font-size:12px;font-weight:400}.ngx-charts .tooltip-anchor{fill:#000}.ngx-charts .gridline-path{stroke:#ddd;stroke-width:1;fill:none}.ngx-charts .refline-path{stroke:#a8b2c7;stroke-width:1;stroke-dasharray:5;stroke-dashoffset:5}.ngx-charts .refline-label{font-size:9px}.ngx-charts .reference-area{fill-opacity:.05;fill:#000}.ngx-charts .gridline-path-dotted{stroke:#ddd;stroke-width:1;fill:none;stroke-dasharray:1,20;stroke-dashoffset:3}.ngx-charts .grid-panel rect{fill:none}.ngx-charts .grid-panel.odd rect{fill:rgba(0,0,0,.05)}", ".force-directed-graph .edge{stroke:#333}"],
             encapsulation: ViewEncapsulation.None,
             changeDetection: ChangeDetectionStrategy.OnPush
@@ -10573,7 +10596,7 @@ var HeatCellSeriesComponent = /** @class */ (function () {
     };
     HeatCellSeriesComponent.prototype.getTooltipText = function (_a) {
         var label = _a.label, data = _a.data, series = _a.series;
-        return "\n      <span class=\"tooltip-label\">" + series + " \u2022 " + label + "</span>\n      <span class=\"tooltip-val\">" + data.toLocaleString() + "</span>\n    ";
+        return "\n      <span class=\"tooltip-label\">" + escapeLabel(series) + " \u2022 " + escapeLabel(label) + "</span>\n      <span class=\"tooltip-val\">" + data.toLocaleString() + "</span>\n    ";
     };
     HeatCellSeriesComponent.prototype.trackBy = function (index, item) {
         return item.tooltipText;
@@ -11257,7 +11280,10 @@ var LineChartComponent = /** @class */ (function (_super) {
         this.deactivateAll();
         this.cleanHover.emit(true);
     };
-    LineChartComponent.prototype.onClick = function (data) {
+    LineChartComponent.prototype.onClick = function (data, series) {
+        if (series) {
+            data.series = series.name;
+        }
         this.select.emit(data);
     };
     LineChartComponent.prototype.trackBy = function (index, item) {
@@ -11483,25 +11509,16 @@ var LineChartComponent = /** @class */ (function (_super) {
         __metadata("design:type", typeof (_c = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _c : Object)
     ], LineChartComponent.prototype, "deactivate", void 0);
     __decorate([
-<<<<<<< HEAD
         Output(),
         __metadata("design:type", typeof (_d = typeof EventEmitter !== "undefined" && EventEmitter) === "function" ? _d : Object)
     ], LineChartComponent.prototype, "cleanHover", void 0);
     __decorate([
-        ContentChild('tooltipTemplate'),
+        ContentChild('tooltipTemplate', { static: false }),
         __metadata("design:type", typeof (_e = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _e : Object)
     ], LineChartComponent.prototype, "tooltipTemplate", void 0);
     __decorate([
-        ContentChild('seriesTooltipTemplate'),
-        __metadata("design:type", typeof (_f = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _f : Object)
-=======
-        ContentChild('tooltipTemplate', { static: false }),
-        __metadata("design:type", typeof (_c = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _c : Object)
-    ], LineChartComponent.prototype, "tooltipTemplate", void 0);
-    __decorate([
         ContentChild('seriesTooltipTemplate', { static: false }),
-        __metadata("design:type", typeof (_d = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _d : Object)
->>>>>>> 5aae672d7cfd7d3bf42794153a0aea6d0e9b262a
+        __metadata("design:type", typeof (_f = typeof TemplateRef !== "undefined" && TemplateRef) === "function" ? _f : Object)
     ], LineChartComponent.prototype, "seriesTooltipTemplate", void 0);
     __decorate([
         HostListener('mouseleave'),
@@ -12247,7 +12264,7 @@ var PolarSeriesComponent = /** @class */ (function () {
     };
     PolarSeriesComponent.prototype.defaultTooltipText = function (_a) {
         var label = _a.label, value = _a.value;
-        return "\n      <span class=\"tooltip-label\">" + this.data.name + " \u2022 " + label + "</span>\n      <span class=\"tooltip-val\">" + value.toLocaleString() + "</span>\n    ";
+        return "\n      <span class=\"tooltip-label\">" + escapeLabel(this.data.name) + " \u2022 " + escapeLabel(label) + "</span>\n      <span class=\"tooltip-val\">" + value.toLocaleString() + "</span>\n    ";
     };
     PolarSeriesComponent.prototype.updateGradients = function () {
         this.hasGradient = this.gradient || this.colors.scaleType === 'linear';
@@ -13416,7 +13433,7 @@ var PieSeriesComponent = /** @class */ (function () {
     PieSeriesComponent.prototype.defaultTooltipText = function (myArc) {
         var label = this.label(myArc);
         var val = formatLabel(myArc.data.value);
-        return "\n      <span class=\"tooltip-label\">" + label + "</span>\n      <span class=\"tooltip-val\">" + val + "</span>\n    ";
+        return "\n      <span class=\"tooltip-label\">" + escapeLabel(label) + "</span>\n      <span class=\"tooltip-val\">" + val + "</span>\n    ";
     };
     PieSeriesComponent.prototype.color = function (myArc) {
         return this.colors.getColor(this.label(myArc));
@@ -13600,7 +13617,7 @@ var CardComponent = /** @class */ (function () {
         this.zone.run(function () {
             var hasValue = _this.data && typeof _this.data.value !== 'undefined';
             var valueFormatting = _this.valueFormatting || (function (card) { return card.value.toLocaleString(); });
-            var labelFormatting = _this.labelFormatting || (function (card) { return trimLabel(card.label, 55); });
+            var labelFormatting = _this.labelFormatting || (function (card) { return escapeLabel(trimLabel(card.label, 55)); });
             _this.transform = "translate(" + _this.x + " , " + _this.y + ")";
             _this.textWidth = Math.max(0, _this.width) - _this.textPadding[1] - _this.textPadding[3];
             _this.cardWidth = Math.max(0, _this.width);
@@ -14001,7 +14018,7 @@ var TreeMapCellComponent = /** @class */ (function () {
     TreeMapCellComponent.prototype.ngOnChanges = function () {
         this.update();
         this.valueFormatting = this.valueFormatting || (function (value) { return value.toLocaleString(); });
-        var labelFormatting = this.labelFormatting || (function (cell) { return trimLabel(cell.label, 55); });
+        var labelFormatting = this.labelFormatting || (function (cell) { return escapeLabel(trimLabel(cell.label, 55)); });
         var cellData = {
             data: this.data,
             label: this.label,
@@ -14174,7 +14191,7 @@ var TreeMapCellSeriesComponent = /** @class */ (function () {
     };
     TreeMapCellSeriesComponent.prototype.getTooltipText = function (_a) {
         var label = _a.label, value = _a.value;
-        return "\n      <span class=\"tooltip-label\">" + label + "</span>\n      <span class=\"tooltip-val\">" + value.toLocaleString() + "</span>\n    ";
+        return "\n      <span class=\"tooltip-label\">" + escapeLabel(label) + "</span>\n      <span class=\"tooltip-val\">" + value.toLocaleString() + "</span>\n    ";
     };
     TreeMapCellSeriesComponent.prototype.onClick = function (data) {
         this.select.emit(data);
@@ -14838,7 +14855,7 @@ var GaugeArcComponent = /** @class */ (function () {
         else {
             val = formatLabel(arc$$1.data.value);
         }
-        return "\n      <span class=\"tooltip-label\">" + label + "</span>\n      <span class=\"tooltip-val\">" + val + "</span>\n    ";
+        return "\n      <span class=\"tooltip-label\">" + escapeLabel(label) + "</span>\n      <span class=\"tooltip-val\">" + val + "</span>\n    ";
     };
     var _a, _b;
     __decorate([
@@ -15084,4 +15101,4 @@ function tickFormat(fieldType, groupByType) {
     };
 }
 
-export { NgxChartsModule, ChartCommonModule, LegendComponent, ScaleLegendComponent, LegendEntryComponent, AdvancedLegendComponent, TooltipModule, TooltipService, TooltipContentComponent, TooltipDirective, StyleTypes, AlignmentTypes, ShowTypes, AxesModule, AxisLabelComponent, XAxisComponent, XAxisTicksComponent, YAxisComponent, YAxisTicksComponent, reduceTicks, CountUpDirective, count, decimalChecker, Timeline, ColorHelper, ChartComponent, AreaComponent, BaseChartComponent, CircleComponent, CircleSeriesComponent, gridSize, gridLayout, GridPanelComponent, GridPanelSeriesComponent, SvgLinearGradientComponent, SvgRadialGradientComponent, TooltipArea, tickFormat, trimLabel, calculateViewDimensions, formatLabel, getUniqueXDomainValues, getScaleType, AreaChartModule, AreaChartComponent, AreaChartNormalizedComponent, AreaChartStackedComponent, AreaSeriesComponent, BarChartModule, BarComponent, BarHorizontalComponent, BarHorizontal2DComponent, BarHorizontalNormalizedComponent, BarHorizontalStackedComponent, SeriesHorizontal, BarLabelComponent, BarVerticalComponent, BarVertical2DComponent, BarVerticalNormalizedComponent, BarVerticalStackedComponent, D0Types, SeriesVerticalComponent, BubbleChartModule, BubbleChartComponent, getDomain, getScale, BubbleSeriesComponent, ForceDirectedGraphModule, ForceDirectedGraphComponent, HeatMapModule, HeatMapComponent, HeatMapCellComponent, HeatCellSeriesComponent, LineChartModule, LineChartComponent, LineComponent, LineSeriesComponent, PolarChartModule, PolarChartComponent, PolarSeriesComponent, NumberCardModule, NumberCardComponent, CardComponent, CardSeriesComponent, PieChartModule, AdvancedPieChartComponent, PieChartComponent, PieArcComponent, PieGridComponent, PieGridSeriesComponent, PieSeriesComponent, PieLabelComponent, TreeMapModule, TreeMapComponent, TreeMapCellComponent, TreeMapCellSeriesComponent, GaugeModule, GaugeArcComponent, GaugeAxisComponent, GaugeComponent, LinearGaugeComponent };
+export { NgxChartsModule, ChartCommonModule, LegendComponent, ScaleLegendComponent, LegendEntryComponent, AdvancedLegendComponent, TooltipModule, TooltipService, TooltipContentComponent, TooltipDirective, StyleTypes, AlignmentTypes, ShowTypes, AxesModule, AxisLabelComponent, XAxisComponent, XAxisTicksComponent, YAxisComponent, YAxisTicksComponent, reduceTicks, CountUpDirective, count, decimalChecker, Timeline, ColorHelper, ChartComponent, AreaComponent, BaseChartComponent, CircleComponent, CircleSeriesComponent, gridSize, gridLayout, GridPanelComponent, GridPanelSeriesComponent, SvgLinearGradientComponent, SvgRadialGradientComponent, TooltipArea, tickFormat, trimLabel, calculateViewDimensions, formatLabel, escapeLabel, getUniqueXDomainValues, getScaleType, AreaChartModule, AreaChartComponent, AreaChartNormalizedComponent, AreaChartStackedComponent, AreaSeriesComponent, BarChartModule, BarComponent, BarHorizontalComponent, BarHorizontal2DComponent, BarHorizontalNormalizedComponent, BarHorizontalStackedComponent, SeriesHorizontal, BarLabelComponent, BarVerticalComponent, BarVertical2DComponent, BarVerticalNormalizedComponent, BarVerticalStackedComponent, D0Types, SeriesVerticalComponent, BubbleChartModule, BubbleChartComponent, getDomain, getScale, BubbleSeriesComponent, ForceDirectedGraphModule, ForceDirectedGraphComponent, HeatMapModule, HeatMapComponent, HeatMapCellComponent, HeatCellSeriesComponent, LineChartModule, LineChartComponent, LineComponent, LineSeriesComponent, PolarChartModule, PolarChartComponent, PolarSeriesComponent, NumberCardModule, NumberCardComponent, CardComponent, CardSeriesComponent, PieChartModule, AdvancedPieChartComponent, PieChartComponent, PieArcComponent, PieGridComponent, PieGridSeriesComponent, PieSeriesComponent, PieLabelComponent, TreeMapModule, TreeMapComponent, TreeMapCellComponent, TreeMapCellSeriesComponent, GaugeModule, GaugeArcComponent, GaugeAxisComponent, GaugeComponent, LinearGaugeComponent };

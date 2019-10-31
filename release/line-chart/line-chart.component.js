@@ -215,7 +215,10 @@ var LineChartComponent = /** @class */ (function (_super) {
         this.deactivateAll();
         this.cleanHover.emit(true);
     };
-    LineChartComponent.prototype.onClick = function (data) {
+    LineChartComponent.prototype.onClick = function (data, series) {
+        if (series) {
+            data.series = series.name;
+        }
         this.select.emit(data);
     };
     LineChartComponent.prototype.trackBy = function (index, item) {
@@ -440,15 +443,11 @@ var LineChartComponent = /** @class */ (function (_super) {
         __metadata("design:type", EventEmitter)
     ], LineChartComponent.prototype, "deactivate", void 0);
     __decorate([
-<<<<<<< HEAD
         Output(),
         __metadata("design:type", EventEmitter)
     ], LineChartComponent.prototype, "cleanHover", void 0);
     __decorate([
-        ContentChild('tooltipTemplate'),
-=======
         ContentChild('tooltipTemplate', { static: false }),
->>>>>>> 5aae672d7cfd7d3bf42794153a0aea6d0e9b262a
         __metadata("design:type", TemplateRef)
     ], LineChartComponent.prototype, "tooltipTemplate", void 0);
     __decorate([
