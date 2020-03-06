@@ -1,27 +1,12 @@
 {
   "name": "@esfaenza/ngx-charts",
-  "version": "9.0.0",
+  "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "npm run build:lib && ng build --prod",
-    "build:lib": "ng build @swimlane/ngx-charts",
-    "build:demo": "npm run build:lib && cross-env NODE_ENV=production ng build --prod --base-href=\"/ngx-charts/\"",
-    "package": "npm run build:lib",
-    "copy-files": "copy README.md dist/swimlane/ngx-charts/README.md && copy LICENSE dist/swimlane/ngx-charts/LICENSE",
-    "ci": "npm run lint && npm run test:ci && npm run prettier:ci",
-    "test": "ng test @swimlane/ngx-charts",
-    "test:ci": "ng test @swimlane/ngx-charts --watch=false --progress=false --browsers=ChromeHeadlessCI",
-    "prettier:ci": "prettier --check  \"{src,projects}/**/*.{js,ts,html,scss,css,md,json}\"",
-    "lint": "ng lint",
-    "e2e": "ng e2e",
-    "predeploy": "npm run build:demo",
-    "deploy": "angular-cli-ghpages --dir ./dist/ngx-charts --name=Swimlane --email=developer@swimlane.com",
-    "prepublish": "npm run package",
-    "publish": "npm publish ./dist/swimlane/ngx-charts",
-    "prepack": "npm run package",
-    "pack": "npm pack ./dist/swimlane/ngx-charts",
-    "prettier": "prettier --write \"{src,projects}/**/*.{js,ts,html,scss,css,md,json}\""
+    "build:lib": "ng build @esfaenza/ngx-charts",
+    "publish": "npm publish ./dist/esfaenza/ngx-charts"
   },
   "dependencies": {
     "@angular/animations": "~9.0.0-rc.6",
